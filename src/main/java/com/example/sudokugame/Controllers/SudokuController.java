@@ -26,13 +26,16 @@ public class SudokuController {
     private StackPane activeCell = null;
     private StackPane[][] cells; // Matriz para guardar referencias a las celdas
 
+    private SudokuBoard model;
+
     /**
      * Inicializa la vista: crea las celdas y aplica estilos de bloque.
      */
     @FXML
     public void initialize() {
-        cells = new StackPane[6][6]; // Inicializar la matriz
-        createCells();
+        model = new SudokuBoard();  // Inicializa el modelo
+        cells = new StackPane[6][6]; // Inicializa la matriz de celdas
+        createCells();  // Crea la cuadrícula visual
     }
     // ------------------- CREAR CELDA ---------------------------
 
@@ -77,10 +80,11 @@ public class SudokuController {
      * @param col Columna de la celda.
      */
     private void handleCellClick(int row, int col) {
-        // Obtener la celda clickeada
+        // Obtener la celda clickeada.El metodo garantiza que cuando hagas clic en una celda
+        //Se deseleccionen todas las celdas anteriores
         StackPane currentCell = cells[row][col];
 
-        // Limpiar estados anteriores
+        // Limpiar estados anteriores. Esto sirve para que solo una celda a la vez se vea resaltada.
         if (activeCell != null) {
             activeCell.getStyleClass().remove("active");
         }
@@ -95,20 +99,7 @@ public class SudokuController {
         activeCell.getStyleClass().add("active");
     }
 
-    /**
-     * Maneja el clic en el botón de acción.
-     * Por ahora, muestra un mensaje en la consola y actualiza el label.
-     */
-    @FXML
-    private void handleButtonClick() {
-        System.out.println("¡Botón presionado!");
-        if (lblStatus != null) {
-            lblStatus.setText("¡Nueva partida iniciada!");
-        }
-    }
 
-    public void handleButtonClick(ActionEvent actionEvent) {
-    }
 
     /**
      * Maneja el clic en el botón "Nuevo Juego".
@@ -117,10 +108,40 @@ public class SudokuController {
     @FXML
     private void handleNewGame() {
         System.out.println("Nuevo Juego iniciado");
+
+        model.generateInitialBoard();       // Genera nuevo tablero válido
+
+        // Mostrar el tablero en la vista
+        for (int row = 0; row < 6; row++) {
+            for (int col = 0; col < 6; col++) {
+                int value = model.getCell(row, col);
+                StackPane cell = cells[row][col];
+                cell.getChildren().clear();
+
+                if (value != 0) {
+                    Text text = new Text(String.valueOf(value));
+                    text.setStyle("-fx-font-size: 20px; -fx-font-weight: bold; -fx-fill: black;");
+                    cell.getChildren().add(text);
+                    cell.setDisable(true); // No editable
+                } else {
+                    cell.setDisable(false); // Editable
+                }
+            }
+        }
+
+        // Limpiar selección
+        if (selectedCell != null) {
+            selectedCell.getStyleClass().remove("selected");
+            selectedCell.getStyleClass().remove("active");
+            selectedCell = null;
+            activeCell = null;
+        }
+
+        // Actualizar estado
         if (lblStatus != null) {
             lblStatus.setText("Nuevo juego iniciado");
         }
-        // Aquí luego conectarás la lógica del modelo
+
     }
 
     /**
