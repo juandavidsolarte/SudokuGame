@@ -1,0 +1,114 @@
+/*
+   FONDO Y FUENTE GLOBAL
+    */
+.root {
+    -fx-background-color: #F5F5F5;
+    -fx-font-family: "Arial", sans-serif;
+}
+
+/* 
+   TÍTULO
+    */
+.title {
+    -fx-font-size: 16px;
+    -fx-text-fill: #212529;
+    -fx-alignment: center;
+}
+
+/*
+   CUADRÍCULA DEL SUDOKU
+    */
+.sudoku-grid {
+    -fx-background-color: white;
+    -fx-border-color: black;        /* Cambiado a negro para coincidir con los bordes internos */
+    -fx-border-width: 2px;          /* Igual grosor que las líneas de bloque */
+    -fx-padding: 0;                 /* Eliminado padding para evitar espacios no deseados */
+}
+
+/*
+   ESTILOS DE CELDAS
+    */
+
+/* Celda base */
+.cell {
+    -fx-pref-width: 40px;
+    -fx-pref-height: 40px;
+    -fx-alignment: center;
+    -fx-background-color: white;
+    -fx-border-color: #CCCCCC;
+    -fx-border-width: 1px;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #212529;
+}
+
+/* Celda seleccionada  */
+.cell.selected {
+    -fx-background-color: #CCE5FF;
+}
+
+/* Celda activa (naranja claro) */
+.cell.active {
+    -fx-background-color: #FFD580;
+}
+
+/* Borde grueso izquierdo (para la primera columna) */
+.cell.border-left {
+    -fx-border-width: 0 0 0 2px;
+    -fx-border-color: black;
+}
+/* Combinaciones con borde izquierdo */
+.cell.border-left.border-bottom {
+    -fx-border-width: 0 0 2px 2px;
+    -fx-border-color: black;
+}
+
+/* Borde grueso inferior (para separar bloques de filas) */
+.cell.border-bottom {
+    -fx-border-width: 0 0 2px 0;
+    -fx-border-color: black;
+}
+
+/* Borde grueso derecho (para separar bloques de columnas) */
+.cell.border-right {
+    -fx-border-width: 0 2px 0 0;
+    -fx-border-color: black;
+}
+
+/* Esquina: celdas que tienen ambos bordes gruesos */
+.cell.border-bottom.border-right {
+    -fx-border-width: 0 2px 2px 0;
+    -fx-border-color: black;
+}
+
+/*
+   ESTILOS PARA CONTROLES (BOTONES, ETIQUETAS)
+    */
+
+.label-info {
+    -fx-font-size: 14px;
+    -fx-text-fill: #212529;
+}
+
+.button-primary {
+    -fx-background-color: #007BFF;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.button-hint {
+    -fx-background-color: #FFC107;
+    -fx-text-fill: #212529;
+    -fx-font-weight: bold;
+}
+
+.button-secondary {
+    -fx-background-color: #E9ECEF;
+    -fx-text-fill: #212529;
+}
+
+.button-rules {
+    -fx-background-color: #6C757D;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
