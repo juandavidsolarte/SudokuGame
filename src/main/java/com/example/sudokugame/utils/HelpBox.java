@@ -31,7 +31,7 @@ public class HelpBox implements IHelpBox {
         scrollPane.setPrefHeight(200);
 
 
-        VBox content = new VBox(new Label("Reglas del juego:"), scrollPane);
+        VBox content = new VBox(new Label("Rules:"), scrollPane);
         content.setSpacing(10);
         alert.getDialogPane().setContent(content);
 

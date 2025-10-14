@@ -5,6 +5,7 @@ import com.example.sudokugame.utils.ConfirmBox;
 import com.example.sudokugame.utils.HelpBox;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
@@ -25,7 +26,7 @@ public class SudokuController {
     // ------------------ DECLARACION --------------
     private StackPane activeCell = null;
     private StackPane[][] cells; // Matriz para guardar referencias a las celdas. (PARA ACCEDER POR SU POSICION)
-
+    private final int boardSize = 6; //final palabra clave que se utiliza para declarar constantes  para que no se les pueda reasignar un nuevo valor para que no puedan ser sobrescritos en una subclase
     private SudokuBoard model;// (Se crea la instancia del modelo)
 
     /**
@@ -119,13 +120,39 @@ public class SudokuController {
      * @param event evento que se genera al presionar una tecla
      */
     private void handleKeyPress(KeyEvent event) {
-        //System.out.println("tecla digitada");
+        System.out.println("Tecla digitada: " + event.getCode());
         if (activeCell != null && !activeCell.isDisabled()) {
             String tecla = event.getText();
 
-            // Validación segura
+
+            //  Detectar si se presiona la tecla back space
+            if (event.getCode() == KeyCode.BACK_SPACE || event.getCode() == KeyCode.DELETE) {
+                // Eliminar el texto de la celda
+                if (!activeCell.getChildren().isEmpty()) {
+                    activeCell.getChildren().clear(); // Borra el número mostrado
+                }
+
+                // Actualizar el modelo a 0 (celda vacía)
+                int row = GridPane.getRowIndex(activeCell);
+                int col = GridPane.getColumnIndex(activeCell);
+                model.setCell(row, col, 0);
+
+                lblStatus.setText("Número eliminado");
+                //System.out.println("Número eliminado en fila " + row + ", columna " + col);
+                model.printBoard();
+                return; // salir para no ejecutar la lógica de los números
+            }
+
+            // Validar que sea número dentro del rango permitido
             if (!tecla.isEmpty() && Character.isDigit(tecla.charAt(0))) {
                 int num = Integer.parseInt(tecla);
+
+
+                if (num < 1 || num > boardSize) {
+                    lblStatus.setText("Only numbers allowed from 1 to  " + boardSize);
+                    return;
+                }
+
 
                 Text cellText;
                 if (activeCell.getChildren().isEmpty()) {
@@ -181,14 +208,14 @@ public class SudokuController {
         // SE AGREGA VALIDACION PARA VERIFICAR CONFIRMACION DE INICIAR JUEGO
         ConfirmBox confirmBox = new ConfirmBox();
         boolean confirmed = confirmBox.showConfirmBox(
-                "Nuevo Juego",
+                "New Game",
                 null,
-                "¿Estás seguro de que quieres empezar un nuevo juego?"
+                "¿Are you sure do you want to create a new game?"
         );
 
         if (confirmed) {
 
-            System.out.println("Nuevo Juego iniciado");
+            System.out.println("New Game initiated");
 
             //model.generateInitialBoard();
             model.generateInitialBoard2();
@@ -218,7 +245,7 @@ public class SudokuController {
             }
 
             if (lblStatus != null) {
-                lblStatus.setText("Nuevo juego iniciado");
+                lblStatus.setText("New Game initiated");
             }
         }
         // Si no se confirma, no hacemos nada
@@ -244,32 +271,19 @@ public class SudokuController {
         }
     }
 
-    @FXML
-    private void handleClear() {
-        if (activeCell != null) {
-            System.out.println("Celda borrada");
-            if (lblStatus != null) {
-                lblStatus.setText("Celda borrada");
-            }
-            // Aquí luego limpiarás el valor en el modelo y en la vista
-        } else {
-            if (lblStatus != null) {
-                lblStatus.setText("Selecciona una celda para borrar");
-            }
-        }
-    }
+
 
     @FXML
     private void handleShowRules() {
         String title = "Sudoku 6x6";
-        String header = "Reglas del Juego";
+        String header = "Game Rules";
         String message =
-                "El objetivo es completar la cuadrícula de 6×6 con números del 1 al 6, cumpliendo:\n\n" +
-                        "• Cada FILA debe contener los números 1-6 sin repetir.\n" +
-                        "• Cada COLUMNA debe contener los números 1-6 sin repetir.\n" +
-                        "• Cada BLOQUE de 2×3 (Hay 6 para el sudoku 6x6), debe contener los números 1-6 sin repetir.\n\n" +
-                        "Al inicio, algunos números ya están colocados. ¡No los puedes cambiar!\n" +
-                        "Tines un máximo 3 pistas o hints por juego).";
+                "The objective is to complete the 6×6 grid with numbers from 1 to 6, following these rules:\n\n" +
+                        "• Each ROW must contain the numbers 1–6 without repetition.\n" +
+                        "• Each COLUMN must contain the numbers 1–6 without repetition.\n" +
+                        "• Each BLOCK of 2×3 (there are 6 blocks in a 6×6 Sudoku) must contain the numbers 1–6 without repetition.\n\n" +
+                        "At the beginning, some numbers are already placed — you cannot change them.!\n" +
+                        "You have a maximum of 3 hints per game.";
 
         HelpBox helpBox = new HelpBox();
         helpBox.showHelpBox(title, message, header);
