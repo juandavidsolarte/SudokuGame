@@ -51,6 +51,7 @@
         <Button fx:id="btnNewGame" onAction="#handleNewGame" styleClass="button-primary" text="New game" />
         <Button fx:id="btnHint" onAction="#handleHint" styleClass="button-hint" text="Hint" />
         <Button fx:id="btnRules" text="Rules" styleClass="button-secondary" onAction="#handleShowRules" />
+        <Button fx:id="btnSolve" onAction="#handleSolve" styleClass="button-Solve" text="Solve" />
 
     </HBox>
 </VBox>

@@ -3,6 +3,7 @@ package com.example.sudokugame.Controllers;
 import com.example.sudokugame.model.SudokuBoard;
 import com.example.sudokugame.utils.ConfirmBox;
 import com.example.sudokugame.utils.HelpBox;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
@@ -287,5 +288,15 @@ public class SudokuController {
 
         HelpBox helpBox = new HelpBox();
         helpBox.showHelpBox(title, message, header);
+    }
+
+    public void handleSolve(ActionEvent actionEvent) {
+        System.out.println("IMPRIMIENDO VIEJO : ");
+        model.printBoard();
+
+        model.solveBoard();
+        System.out.println("\n RESUELTO : \n");
+        model.printBoard();
+
     }
 }

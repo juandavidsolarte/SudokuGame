@@ -57,14 +57,17 @@ public class SudokuBoard {
      */
     public void generateInitialBoard2() {
         clearBoard();
-        Random random = new Random();
+        //solveBoard();// Genera un tablero que si tiene solucion.
+        //System.out.println("Resuelto 1: ");
+        //printBoard();
+
         // Recorrer los 6 bloques (3 filas de bloques × 2 columnas de bloques)
         for (int rowNumber = 0; rowNumber < 6; rowNumber++) {
             System.out.println("Generando fila "+rowNumber);
             for (int sectionCol = 0; sectionCol < 2; sectionCol++) {
                 // Colocar exactamente 2 números en este bloque
 
-
+                // Aqui revisar que elemento se van a borar
                 //int rowRand = (int) (Math.random()*2);
                 int colNumber = (int) (Math.random()*3);
 
@@ -235,4 +238,44 @@ public class SudokuBoard {
     public int[][] getBoard() {
         return board;
     }
+
+    /**
+     * Esta funcion resuleve automaticamente el sudoku, utiliza funciones creadas anteriormente
+     * +
+     */
+    public boolean solveBoard(){
+        for (int row=0; row < GRID_SIZE; row ++){
+            for (int column=0; column< GRID_SIZE; column ++){
+                if (board [row] [column] == 0){
+                    for (int numberToTry = 1 ;numberToTry <= GRID_SIZE; numberToTry ++){
+                        if (isValidPlacement2(numberToTry, row, column)){
+                            board [row] [column] = numberToTry;
+                            //Ahora se hace llamado recursivo
+                            if (solveBoard()) {
+                                return true;
+                            }
+                            else{
+                                board[row][column] =0;
+                            }
+                        }
+
+                    }
+
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }//end method
+
+
+    public int generateRandomNumber(int max){
+        int x =  (int) (Math.random()*max);
+        return x;
+
+    }
+
+
+
 }
