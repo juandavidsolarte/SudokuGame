@@ -117,3 +117,9 @@
     -fx-text-fill: white;
     -fx-font-weight: bold;
 }
+
+/* Estilo para números colocados por pistas */
+.hint-number {
+    -fx-fill: #2196F3; /* Color azul para números de pista */
+    -fx-font-weight: bold;
+}

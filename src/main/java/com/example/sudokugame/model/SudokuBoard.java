@@ -14,7 +14,7 @@ public class SudokuBoard {
 
     //----- DECLARACION DE VARIABLES -----
     private int[][] board;
-    private int[][] initialBoard; // Para marcar las celdas iniciales las no editables
+    private int[][] solvedBoard; // Variable para guardar el tablero resuelto
     private int hintsLeft = 3;
 
 
@@ -28,7 +28,7 @@ public class SudokuBoard {
      */
     public SudokuBoard() {
         this.board = new int[GRID_SIZE][GRID_SIZE];
-        this.initialBoard = new int[GRID_SIZE][GRID_SIZE];
+        this.solvedBoard = new int[GRID_SIZE][GRID_SIZE];
     }
     //----- DECLARACION DE VARIABLES -----
 
@@ -39,7 +39,7 @@ public class SudokuBoard {
         for (int i = 0; i < 6; i++) {
             for (int j = 0; j < 6; j++) {
                 board[i][j] = 0;
-                initialBoard[i][j] = 0;
+                solvedBoard[i][j] = 0;
             }
         }
     }
@@ -57,17 +57,45 @@ public class SudokuBoard {
      */
     public void generateInitialBoard2() {
         clearBoard();
-        //solveBoard();// Genera un tablero que si tiene solucion.
-        //System.out.println("Resuelto 1: ");
-        //printBoard();
+        solveBoard();// Genera un tablero que si tiene solucion.
+
+        // Guardar el tablero resuelto en solvedBoard
+        solvedBoard = new int[6][6];
+        for (int r = 0; r < 6; r++) {
+            System.arraycopy(board[r], 0, solvedBoard[r], 0, 6);
+        }
+        System.out.println("Tablero resuelto:");
+        printBoard();
+
+
 
         // Recorrer los 6 bloques (3 filas de bloques × 2 columnas de bloques)
         for (int rowNumber = 0; rowNumber < 6; rowNumber++) {
-            System.out.println("Generando fila "+rowNumber);
+            //System.out.println("Generando fila "+rowNumber);
             for (int sectionCol = 0; sectionCol < 2; sectionCol++) {
-                // Colocar exactamente 2 números en este bloque
 
-                // Aqui revisar que elemento se van a borar
+                //----- Inicia  Nueva implementacion(Borrando de tablero)
+                int count = 0;
+                int numbersAllowed = 2;
+                while (count < numbersAllowed) {
+
+                    int colNumber = (int) (Math.random() * 3);
+
+                    if (sectionCol > 0) {
+                        colNumber = colNumber + 3;
+                    }
+
+                    // Solo poner en 0 si aún no está en 0
+                    if (board[rowNumber][colNumber] != 0) {
+                        board[rowNumber][colNumber] = 0;
+                        count++;
+                    }
+
+                }
+
+                // ----- Finaliza  Nueva implementacion(Borrando de tablero)
+                /*
+                // Aqui revisar que elemento se van a borrar
                 //int rowRand = (int) (Math.random()*2);
                 int colNumber = (int) (Math.random()*3);
 
@@ -88,12 +116,18 @@ public class SudokuBoard {
                      }
                 }
 
+                 */
+
             }
         }//END FOR SECTION
+        // Imprimir el tablero con los números borrados
+        System.out.println("\nTablero inicial (con números borrados):");
+        printBoard();
+
+
+
+
     }//end METHOD
-
-
-
 
     // ------ METODO PARA LLENAR TABLERO  ---------------
 
@@ -170,12 +204,8 @@ public class SudokuBoard {
 
     }
 
-
-
-
-
-
    // -----------------
+    /*
     public boolean validateInitialBoard(int numberToTry){
         for (int row=0; row < GRID_SIZE; row ++){
             for (int column=0; column< GRID_SIZE; column ++){
@@ -185,16 +215,14 @@ public class SudokuBoard {
                             return true;
 
                         }
-
-
-
-
                 }
             }
         }
         return false;
 
     }//end method
+
+     */
 
     // ------ METODO DE VERIFICACION ---------------
 
@@ -269,12 +297,57 @@ public class SudokuBoard {
         return true;
     }//end method
 
-
+    /*
     public int generateRandomNumber(int max){
         int x =  (int) (Math.random()*max);
         return x;
 
     }
+
+     */
+
+    //------------------ Metodo para dar la pista-----------------
+    /**
+     * Proporciona una pista en una celda específica del tablero Sudoku.
+     * <p>
+     * Este metodo coloca el número correcto (según el tablero resuelto) en la celda indicada
+     * por las coordenadas (row, col), siempre y cuando la celda esté vacía (es decir, contenga 0).
+     * No modifica el tablero de solución, solo el tablero actual del jugador.
+     */
+
+    public boolean giveHint(int row, int col) {
+        // Verificar que la posición es válida
+        if (row < 0 || row >= 6 || col < 0 || col >= 6) {
+            System.out.println("Posición inválida!");
+            return false;
+        }
+
+        // Verificar que la celda está vacía
+        if (board[row][col] != 0) {
+            System.out.println("Esta celda ya tiene un número");
+            return false;
+        }
+
+        // Consultar el número correcto del tablero resuelto
+        int correctValue = solvedBoard[row][col];
+
+        // Colocar el número en el board
+        board[row][col] = correctValue;
+
+        System.out.println("Pista: Se colocó el número " + correctValue +
+                " en la posición [" + row + "][" + col + "]");
+
+        return true;
+    }
+
+
+
+
+
+    //------------------ Metodo para dar la pista-----------------
+
+
+
 
 
 

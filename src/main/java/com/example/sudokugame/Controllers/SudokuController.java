@@ -5,6 +5,7 @@ import com.example.sudokugame.utils.ConfirmBox;
 import com.example.sudokugame.utils.HelpBox;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -22,6 +23,8 @@ public class SudokuController {
     private GridPane sudokuGrid;
     @FXML
     private Label lblStatus;
+    @FXML
+    private Button btnHint;
 
 
     // ------------------ DECLARACION --------------
@@ -29,6 +32,10 @@ public class SudokuController {
     private StackPane[][] cells; // Matriz para guardar referencias a las celdas. (PARA ACCEDER POR SU POSICION)
     private final int boardSize = 6; //final palabra clave que se utiliza para declarar constantes  para que no se les pueda reasignar un nuevo valor para que no puedan ser sobrescritos en una subclase
     private SudokuBoard model;// (Se crea la instancia del modelo)
+
+    // Variables para guardar la celda activa actualmente
+    private int activeRow = -1;
+    private int activeCol = -1;
 
     /**
      * Inicializa la vista: crea las celdas y aplica estilos de bloque.
@@ -38,6 +45,11 @@ public class SudokuController {
         model = new SudokuBoard();  // Inicializa el modelo
         cells = new StackPane[6][6]; // Inicializa la matriz de celdas
         createCells();  // Crea la cuadrícula visual
+        // Inicializar el botón de pista como desactivado
+        if (btnHint != null) {
+            btnHint.setDisable(true);
+        }
+
     }
     // ------------------- CREAR CELDA ---------------------------
 
@@ -91,7 +103,15 @@ public class SudokuController {
      * @param row Fila de la celda.
      * @param col Columna de la celda.
      */
-    private void handleCellClick(int row, int col) {
+    public void handleCellClick(int row, int col) {
+
+        // Guardar las coordenadas de la celda activa
+        activeRow = row;
+        activeCol = col;
+        // Activar el botón de hint cuando se selecciona una celda
+        if (btnHint != null) {
+            btnHint.setDisable(false);
+        }
         // Obtener la celda clickeada.El metodo garantiza que cuando hagas clic en una celda
         //Se deseleccionen todas las celdas anteriores. SE CREA EL MANEJADOR currentCell. (cells: ro,colum son las coordenadas)
         StackPane currentCell = cells[row][col];
@@ -190,13 +210,9 @@ public class SudokuController {
                 }
                 System.out.println("Modelo Actualizado : ");
                 model.printBoard();
-
-
-
-
             }
         }
-    }
+    }// End Method
 
 
 
@@ -248,29 +264,96 @@ public class SudokuController {
             if (lblStatus != null) {
                 lblStatus.setText("New Game initiated");
             }
+
+            // Resetear las coordenadas de la celda activa
+            activeRow = -1;
+            activeCol = -1;
+            // Desactivar el botón de hint hasta que se seleccione una celda
+            if (btnHint != null) {
+                btnHint.setDisable(true);
+            }
+
+
         }
         // Si no se confirma, no hacemos nada
 
     }
-
+    // ---------------------------pista -------------
     /**
      * Maneja el clic en el botón "Pista / Ayuda".
      * Muestra una sugerencia en la celda seleccionada (por ahora, solo un mensaje).
      */
     @FXML
     private void handleHint() {
-        if (activeCell != null) {
+
+        if (activeCell != null && activeRow != -1 && activeCol != -1) {
             System.out.println("Pista solicitada para la celda seleccionada");
-            if (lblStatus != null) {
-                lblStatus.setText("Pista aplicada");
+
+            // Llamar al metodo giveHintAt del modelo SudokuBoard
+            boolean success = model.giveHint(activeRow, activeCol);
+
+            if (success) {
+                // Obtener el valor correcto del tablero resuelto
+                int correctValue = model.getBoard()[activeRow][activeCol];
+
+                // Actualizar el modelo usando setCell
+                model.setCell(activeRow, activeCol, correctValue);
+
+                // Actualizar la visualización de la celda con el valor correcto
+                updateCellDisplay(activeRow, activeCol, correctValue);
+
+                // Bloquear la celda para que no pueda ser modificada
+                StackPane cell = cells[activeRow][activeCol];
+                cell.setDisable(true);
+                // Limpiar la selección actual
+                if (activeCell != null) {
+                    activeCell.getStyleClass().remove("active");
+                    activeCell = null;
+                }
+                // Resetear coordenadas
+                activeRow = -1;
+                activeCol = -1;
+
+                // Desactivar el botón de hint (ya no hay celda seleccionada)
+                if (btnHint != null) {
+                    btnHint.setDisable(true);
+                }
+
+                if (lblStatus != null) {
+                    lblStatus.setText("Pista aplicada: número " + correctValue);
+                }
+            } else {
+                if (lblStatus != null) {
+                    lblStatus.setText("Esta celda ya tiene un número");
+                }
             }
-            // Aquí luego pondrás: resaltar una celda con un número sugerido
         } else {
             if (lblStatus != null) {
                 lblStatus.setText("Selecciona una celda primero");
             }
         }
+    }// End method
+
+    // Metodo para actualizar la visualización de una celda específica
+    private void updateCellDisplay(int row, int col, int value) {
+        StackPane cell = cells[row][col];
+        // Limpiar el contenido anterior
+        cell.getChildren().clear();
+
+        // Crear un nuevo Text con el valor
+        if (value != 0) {
+            Text text = new Text(String.valueOf(value));
+            text.setStyle("-fx-font-size: 20px; -fx-font-weight: bold;");
+
+            // Agregar clase CSS para diferenciar números de pista
+            text.getStyleClass().add("hint-number");
+
+            cell.getChildren().add(text);
+        }
     }
+
+
+    // ---------------------------pista -------------
 
 
 
@@ -290,6 +373,8 @@ public class SudokuController {
         helpBox.showHelpBox(title, message, header);
     }
 
+    //-----------METODO PARA RESOLVER TABLERO-----
+   /*
     public void handleSolve(ActionEvent actionEvent) {
         System.out.println("IMPRIMIENDO VIEJO : ");
         model.printBoard();
@@ -299,4 +384,8 @@ public class SudokuController {
         model.printBoard();
 
     }
+
+    */
+    //-----------METODO PARA RESOLVER TABLERO-----
+
 }
