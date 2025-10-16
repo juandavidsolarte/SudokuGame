@@ -195,17 +195,19 @@ public class SudokuController {
                 //Verificar el modelo actualizado
                 model.printBoard();
 
+                model.setCell(row, col, 0);
                 boolean answer = model.isValidPlacement2(num, row, col);
                 System.out.println("respuesta = "+ answer);
                 // Si el lugar es valido en la matriz se actualiza el modelo con nuel nuevo numero
                 if (answer == true) {
                     model.setCell(row, col, num);
+                    cellText.setStyle("-fx-font-size: 20px; -fx-font-weight: bold; -fx-fill: Black;");
 
 
                 }
                 else {
                     lblStatus.setText("Invalid number");
-                    model.setCell(row, col, 0);//COMO SE EQUIVOCO SE ACTUALIZA EL MODELO CON 0
+                    cellText.setStyle("-fx-font-size: 20px; -fx-font-weight: bold; -fx-fill: Red;");
 
                 }
                 System.out.println("Modelo Actualizado : ");
