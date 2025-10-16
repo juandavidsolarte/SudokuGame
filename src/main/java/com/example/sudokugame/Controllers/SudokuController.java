@@ -32,6 +32,7 @@ public class SudokuController {
     private StackPane[][] cells; // Matriz para guardar referencias a las celdas. (PARA ACCEDER POR SU POSICION)
     private final int boardSize = 6; //final palabra clave que se utiliza para declarar constantes  para que no se les pueda reasignar un nuevo valor para que no puedan ser sobrescritos en una subclase
     private SudokuBoard model;// (Se crea la instancia del modelo)
+    private int hintsLeft = 3;
 
     // Variables para guardar la celda activa actualmente
     private int activeRow = -1;
@@ -109,7 +110,7 @@ public class SudokuController {
         activeRow = row;
         activeCol = col;
         // Activar el botón de hint cuando se selecciona una celda
-        if (btnHint != null) {
+        if (btnHint != null && hintsLeft > 0) {
             btnHint.setDisable(false);
         }
         // Obtener la celda clickeada.El metodo garantiza que cuando hagas clic en una celda
@@ -200,8 +201,9 @@ public class SudokuController {
                 System.out.println("respuesta = "+ answer);
                 // Si el lugar es valido en la matriz se actualiza el modelo con nuel nuevo numero
                 if (answer == true) {
+                    lblStatus.setText("");
                     model.setCell(row, col, num);
-                    cellText.setStyle("-fx-font-size: 20px; -fx-font-weight: bold; -fx-fill: Black;");
+                    cellText.setStyle("-fx-font-size: 20px; -fx-font-weight: bold; -fx-fill: #6338FF;");
 
 
                 }
@@ -267,6 +269,9 @@ public class SudokuController {
                 lblStatus.setText("New Game initiated");
             }
 
+            //Resetear la cantidad de pistas
+            hintsLeft=3;
+
             // Resetear las coordenadas de la celda activa
             activeRow = -1;
             activeCol = -1;
@@ -281,9 +286,14 @@ public class SudokuController {
 
     }
     // ---------------------------pista -------------
+
     /**
-     * Maneja el clic en el botón "Pista / Ayuda".
-     * Muestra una sugerencia en la celda seleccionada (por ahora, solo un mensaje).
+     * Gestiona la solicitud de una pista y revalida el tablero sin eliminar los errores previos.
+     * <p>
+     * Este metodo coloca el número correcto en la celda seleccionada según el tablero resuelto.
+     * Luego revisa todo el tablero para detectar nuevas inconsistencias, pero sin borrar
+     * las celdas previamente marcadas en rojo.
+     * </p>
      */
     @FXML
     private void handleHint() {
@@ -315,26 +325,67 @@ public class SudokuController {
                 // Resetear coordenadas
                 activeRow = -1;
                 activeCol = -1;
+                hintsLeft -= 1;
 
                 // Desactivar el botón de hint (ya no hay celda seleccionada)
                 if (btnHint != null) {
                     btnHint.setDisable(true);
                 }
 
-                if (lblStatus != null) {
+                var errores = model.revisarErrores();
+
+                if (!errores.isEmpty()) {
+                    for (int[] pos : errores) {
+                        int r = pos[0]; // Corresponde a la fila
+                        int c = pos[1]; //Corresponde a la columna
+                        if (!cells[r][c].isDisabled()) {
+                            marcarErrorVisual(r, c);
+                        }
+                    }
+                    lblStatus.setText("Algunos números siguen siendo inválidos");
+                } else {
                     lblStatus.setText("Pista aplicada: número " + correctValue);
                 }
+
             } else {
                 if (lblStatus != null) {
                     lblStatus.setText("Esta celda ya tiene un número");
                 }
+            }
+
+        } else if (hintsLeft <= 0) {
+            if (btnHint != null){
+                btnHint.setDisable(true);
             }
         } else {
             if (lblStatus != null) {
                 lblStatus.setText("Selecciona una celda primero");
             }
         }
-    }// End method
+    }
+
+    /**
+     * Marca una celda específica como errónea, cambiando el color de su texto a rojo.
+     * <p>
+     * Si la celda ya estaba marcada previamente, este metodo no la sobrescribe;
+     * simplemente la deja roja. Esto permite conservar los errores antiguos.
+     * </p>
+     *
+     * @param row la fila de la celda que presenta el error.
+     * @param col la columna de la celda que presenta el error.
+     */
+    private void marcarErrorVisual(int row, int col) {
+        StackPane cell = cells[row][col];
+        if (!cell.getChildren().isEmpty()) {
+            Text text = (Text) cell.getChildren().get(0);
+
+            // Solo marca en rojo si aún no lo está
+            if (!text.getStyle().contains("Red")) {
+                text.setStyle("-fx-font-size: 20px; -fx-font-weight: bold; -fx-fill: Red;");
+            }
+        }
+    }
+
 
     // Metodo para actualizar la visualización de una celda específica
     private void updateCellDisplay(int row, int col, int value) {
