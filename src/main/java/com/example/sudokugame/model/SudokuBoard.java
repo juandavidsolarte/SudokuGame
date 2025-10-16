@@ -1,8 +1,7 @@
 package com.example.sudokugame.model;
 
 import javax.swing.*;
-import java.util.Arrays;
-import java.util.Random;
+import java.util.ArrayList;
 
 /**
  * Clase que representa el tablero de Sudoku 6x6.
@@ -15,12 +14,11 @@ public class SudokuBoard {
     //----- DECLARACION DE VARIABLES -----
     private int[][] board;
     private int[][] solvedBoard; // Variable para guardar el tablero resuelto
-    private int hintsLeft = 3;
 
 
     static int GRID_SIZE = 6;
-    int ROW_BOX_SIZE = 2;
-    int COLUMN_BOX_SIZE = 3;
+    static int ROW_BOX_SIZE = 2;
+    static int COLUMN_BOX_SIZE = 3;
 
     /**
      * Constructor por defecto.
@@ -164,8 +162,8 @@ public class SudokuBoard {
         int localBoxRow = row - (row % ROW_BOX_SIZE);
         int localBoxColumn = column -  (column % COLUMN_BOX_SIZE);
 
-        for (int i = localBoxRow; i< localBoxRow + 1 ;  i++){
-            for (int j= localBoxColumn; j< localBoxColumn + 3;  j++) {
+        for (int i = localBoxRow; i< localBoxRow + ROW_BOX_SIZE ;  i++){
+            for (int j= localBoxColumn; j< localBoxColumn + COLUMN_BOX_SIZE;  j++) {
                 if (board[i][j] == number) {
                     return true;
                 }
@@ -268,7 +266,7 @@ public class SudokuBoard {
     }
 
     /**
-     * Esta funcion resuleve automaticamente el sudoku, utiliza funciones creadas anteriormente
+     * Esta funcion resuelve automaticamente el sudoku, utiliza funciones creadas anteriormente
      * +
      */
     public boolean solveBoard(){
@@ -314,7 +312,6 @@ public class SudokuBoard {
      * por las coordenadas (row, col), siempre y cuando la celda esté vacía (es decir, contenga 0).
      * No modifica el tablero de solución, solo el tablero actual del jugador.
      */
-
     public boolean giveHint(int row, int col) {
         // Verificar que la posición es válida
         if (row < 0 || row >= 6 || col < 0 || col >= 6) {
@@ -339,6 +336,41 @@ public class SudokuBoard {
 
         return true;
     }
+
+    /**
+     * Revisa todo el tablero actual y devuelve una lista con las posiciones
+     * de las celdas que actualmente violan las reglas del Sudoku.
+     * <p>
+     * Este metodo es útil para verificar la coherencia del tablero después de que
+     * el usuario o el sistema (por ejemplo, al dar una pista) modifiquen celdas.
+     * </p>
+     *
+     * @return una lista de arreglos de enteros con dos elementos [fila, columna]
+     *         representando las celdas que tienen un valor incorrecto.
+     */
+    public ArrayList<int[]> revisarErrores() {
+        ArrayList<int[]> errores = new ArrayList<>();
+
+        for (int row = 0; row < GRID_SIZE; row++) {
+            for (int col = 0; col < GRID_SIZE; col++) {
+                int num = board[row][col];
+                if (num == 0) continue; // Ignora celdas vacías
+
+                // Quitar temporalmente el número
+                board[row][col] = 0;
+
+                if (!isValidPlacement2(num, row, col)) {
+                    errores.add(new int[]{row, col});
+                }
+
+                // Restaurar número
+                board[row][col] = num;
+            }
+        }
+
+        return errores;
+    }
+
 
 
 
