@@ -2,6 +2,7 @@ package com.example.sudokugame.utils;
 
 /**
  * Interfaz para mostrar cuadros de diálogo de confirmación.
+ * @author Juan David Solarte
  */
 public interface IConfirmBox {
     /**

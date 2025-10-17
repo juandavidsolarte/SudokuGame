@@ -8,6 +8,8 @@ import java.util.ArrayList;
  * Implementa la lógica del juego: generación, validación, sugerencias.
  * El tablero está compuesto por 6 filas y 6 columnas, dividido en 6 bloques de 2x3.
  * Cada celda contiene un número entre 1 y 6, o 0 si está vacía.
+ * @author Juan David Solarte
+ * @author Sergio Ernesto Patiño
  */
 public class SudokuBoard {
 
@@ -130,11 +132,13 @@ public class SudokuBoard {
     // ------ METODO PARA LLENAR TABLERO  ---------------
 
     // ------ METODO DE VERIFICACION ---------------
+
     /**
-     * Verifica si un número puede colocarse en una posición específica.
+     * Verifica que number no exista dentro de la fila
+     * @param number numero a verificar
+     * @param row fila a la que pertenece el numero
      * @return true si el número es válido, false en caso contrario
      */
-
     // --- VALIDA QUE EL NUMERO A INSERTAR NO EXISTA EN LA FILA
     public  boolean  isNumberRow( int number, int row){
         for (int i=0; i< GRID_SIZE; i++){
@@ -146,7 +150,12 @@ public class SudokuBoard {
         return false;
     }
 
-    // --- VALIDA QUE EL NUMERO A INSERTAR NO EXISTA EN LA COLUMNA
+    /**
+     * Verifica que number no exista dentro de la columna
+     * @param number numero a verificar
+     * @param column columna a la que pertenece el numero
+     * @return true si el número es válido, false en caso contrario
+     */
     public boolean  isNumberColumn( int number, int column){
         for (int i=0; i< GRID_SIZE; i++){
             if (board[i][column] == number){
@@ -157,7 +166,15 @@ public class SudokuBoard {
         return false;
     }
 
-    //Verifica si el numero está en sub-matriz
+
+
+    /**
+     * Verifica que number no exista dentro del bloque 2x3
+     * @param number numero a verificar
+     * @param row fila a la que pertenece el numero
+     * @param column columna a la que pertenece el numero
+     * @return true si el número es válido, false en caso contrario
+     */
     public boolean  isNumberBox( int number, int row, int column){
         int localBoxRow = row - (row % ROW_BOX_SIZE);
         int localBoxColumn = column -  (column % COLUMN_BOX_SIZE);
@@ -173,8 +190,18 @@ public class SudokuBoard {
         return false;
     }
 
-    /*--- ESTE METODO QUE USA LOS METODOS ANTERIORES PARA VERIFICAR SI EL NUMERO A INSERTAR ESTA EN UN LUGAR CORRECTO TENIENDO CUENTA LAS REGLAS DE JUEGO
-    Retorna true, si el numero a insertar no esta ni en la fila ni en la clomuna ni e el bloque, returna false en otro caso.
+
+
+    /**
+     * Este metodo verifica si el numero a insertar esta en un lugar
+     * correcto teniendo en cuenta las reglas de juego
+     * @param number numero a verificar
+     * @param row fila a la que pertenece el numero
+     * @param column columna a la que pertenece el numero
+     * @return Retorna true, si el numero a insertar no esta ni en la fila ni en la clomuna ni e el bloque, returna false en otro caso.
+     * @see #isNumberRow(int, int)
+     * @see #isNumberColumn(int, int)
+     * @see #isNumberBox(int, int, int)
      */
     public boolean isValidPlacement2( int number, int row, int column){
 
@@ -249,7 +276,10 @@ public class SudokuBoard {
 
     }//end method
 
-    // Imprimir board en consola
+
+    /**
+     * Imprime el tablero en la consola
+     */
     public void printBoard() {
         System.out.println("\n===== NUEVO ESTADO DEL TABLERO =====");
         for (int i = 0; i < board.length; i++) {
@@ -261,6 +291,10 @@ public class SudokuBoard {
         }
     }
 
+    /**
+     * Retorna el tablero de juego
+     * @return matriz de tablero
+     */
     public int[][] getBoard() {
         return board;
     }//end method

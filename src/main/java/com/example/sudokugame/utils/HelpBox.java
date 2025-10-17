@@ -9,6 +9,7 @@ import javafx.stage.Stage;
 /**
  * Implementación de IHelpBox usando JavaFX Alert.
  * Muestra ventanas de información para reglas, ayuda, etc.
+ * @author Juan David Solarte
  */
 
 public class HelpBox implements IHelpBox {
