@@ -210,10 +210,14 @@ public class SudokuController {
                     cellText.setStyle("-fx-font-size: 20px; -fx-font-weight: bold; -fx-fill: #6338FF;");
 
                     // Verificar si el tablero está completo después de colocar el número
+                    System.out.println("Verificando si está completo...");
                     if (model.isBoardComplete()) {
-                        lblStatus.setText("¡Sudoku Completed!");
-                        cellText.setStyle("-fx-font-size: 40px; -fx-font-weight: bold; -fx-fill: Green;");
 
+                        lblStatus.setText("¡Sudoku Completed!");
+                        lblStatus.setStyle("-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: Green;");
+
+                    } else {
+                        System.out.println("Aún faltan celdas"); // Debug
                     }
 
 
