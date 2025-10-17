@@ -34,8 +34,8 @@ public class SudokuBoard {
      * Limpia el tablero estableciendo todas las celdas a 0.
      */
     private void clearBoard() {
-        for (int i = 0; i < 6; i++) {
-            for (int j = 0; j < 6; j++) {
+        for (int i = 0; i < GRID_SIZE; i++) {
+            for (int j = 0; j < GRID_SIZE; j++) {
                 board[i][j] = 0;
                 solvedBoard[i][j] = 0;
             }
@@ -58,8 +58,8 @@ public class SudokuBoard {
         solveBoard();// Genera un tablero que si tiene solucion.
 
         // Guardar el tablero resuelto en solvedBoard
-        solvedBoard = new int[6][6];
-        for (int r = 0; r < 6; r++) {
+        solvedBoard = new int[GRID_SIZE][GRID_SIZE];
+        for (int r = 0; r < GRID_SIZE; r++) {
             System.arraycopy(board[r], 0, solvedBoard[r], 0, 6);
         }
         System.out.println("Tablero resuelto:");
@@ -247,9 +247,9 @@ public class SudokuBoard {
     public void setCell(int row, int col, int value) {
         board[row][col] = value;
 
-    }
+    }//end method
 
-
+    // Imprimir board en consola
     public void printBoard() {
         System.out.println("\n===== NUEVO ESTADO DEL TABLERO =====");
         for (int i = 0; i < board.length; i++) {
@@ -263,7 +263,7 @@ public class SudokuBoard {
 
     public int[][] getBoard() {
         return board;
-    }
+    }//end method
 
     /**
      * Esta funcion resuelve automaticamente el sudoku, utiliza funciones creadas anteriormente
@@ -338,7 +338,7 @@ public class SudokuBoard {
     }
 
     /**
-     * Revisa todo el tablero actual y devuelve una lista con las posiciones
+     * Revisa el tablero actual y devuelve una lista con las posiciones
      * de las celdas que actualmente violan las reglas del Sudoku.
      * <p>
      * Este metodo es útil para verificar la coherencia del tablero después de que
@@ -371,12 +371,28 @@ public class SudokuBoard {
         return errores;
     }
 
+    //------------------ Metodo para dar la pista----------------
 
+    //------------------ Metodo para revisar -----------------
+    // Metodo para verificar si el tablero está completo y correcto
+    public boolean isBoardComplete() {
+        // Verificar que no haya celdas vacías y que coincidan con la solución
+        for (int i = 0; i < GRID_SIZE; i++) {
+            for (int j = 0; j < GRID_SIZE; j++) {
+                // Si hay alguna celda vacía, el juego no está completo
+                if (board[i][j] == 0) {
+                    return false;
+                }
+                // Si algún número no coincide con la solución, es incorrecto
+                if (board[i][j] != solvedBoard[i][j]) {
+                    return false;
+                }
+            }
+        }
 
+        return true; // Todos los números son correctos
+    }
 
-
-
-    //------------------ Metodo para dar la pista-----------------
 
 
 

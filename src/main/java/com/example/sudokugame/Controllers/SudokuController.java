@@ -5,13 +5,14 @@ import com.example.sudokugame.utils.ConfirmBox;
 import com.example.sudokugame.utils.HelpBox;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
+import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.Text;
+
+import java.util.Optional;
 
 /**
  * Controlador de la vista del juego Sudoku 6x6.
@@ -25,6 +26,8 @@ public class SudokuController {
     private Label lblStatus;
     @FXML
     private Button btnHint;
+    @FXML
+    private Label lblHintsRemaining;
 
 
     // ------------------ DECLARACION --------------
@@ -199,11 +202,19 @@ public class SudokuController {
                 model.setCell(row, col, 0);
                 boolean answer = model.isValidPlacement2(num, row, col);
                 System.out.println("respuesta = "+ answer);
+
                 // Si el lugar es valido en la matriz se actualiza el modelo con nuel nuevo numero
                 if (answer == true) {
                     lblStatus.setText("");
                     model.setCell(row, col, num);
                     cellText.setStyle("-fx-font-size: 20px; -fx-font-weight: bold; -fx-fill: #6338FF;");
+
+                    // Verificar si el tablero está completo después de colocar el número
+                    if (model.isBoardComplete()) {
+                        lblStatus.setText("¡Sudoku Completed!");
+                        cellText.setStyle("-fx-font-size: 40px; -fx-font-weight: bold; -fx-fill: Green;");
+
+                    }
 
 
                 }
@@ -237,6 +248,9 @@ public class SudokuController {
         if (confirmed) {
 
             System.out.println("New Game initiated");
+            // Reiniciar el contador de pistas
+            hintsLeft = 3;
+            updateHintsLabel();
 
             //model.generateInitialBoard();
             model.generateInitialBoard2();
@@ -291,15 +305,34 @@ public class SudokuController {
      * Gestiona la solicitud de una pista y revalida el tablero sin eliminar los errores previos.
      * <p>
      * Este metodo coloca el número correcto en la celda seleccionada según el tablero resuelto.
-     * Luego revisa todo el tablero para detectar nuevas inconsistencias, pero sin borrar
+     * Luego revisa el tablero para detectar nuevas inconsistencias, pero sin borrar
      * las celdas previamente marcadas en rojo.
      * </p>
      */
     @FXML
     private void handleHint() {
+        // Verificar si no quedan pistas
+        if (hintsLeft <= 0) {
+            if (btnHint != null) {
+                btnHint.setDisable(true);
+            }
+            if (lblStatus != null) {
+                lblStatus.setText("No quedan pistas disponibles");
+            }
+            return;
+        }
 
+        // Verificar si hay una celda seleccionada
         if (activeCell != null && activeRow != -1 && activeCol != -1) {
             System.out.println("Pista solicitada para la celda seleccionada");
+
+            // Verificar si la celda ya tiene un número
+            if (model.getCell(activeRow, activeCol) != 0) {
+                if (lblStatus != null) {
+                    lblStatus.setText("Esta celda ya tiene un número");
+                }
+                return;
+            }
 
             // Llamar al metodo giveHintAt del modelo SudokuBoard
             boolean success = model.giveHint(activeRow, activeCol);
@@ -308,36 +341,39 @@ public class SudokuController {
                 // Obtener el valor correcto del tablero resuelto
                 int correctValue = model.getBoard()[activeRow][activeCol];
 
-                // Actualizar el modelo usando setCell
+                // Actualizar el modelo
                 model.setCell(activeRow, activeCol, correctValue);
 
-                // Actualizar la visualización de la celda con el valor correcto
+                // Actualizar la visualización
                 updateCellDisplay(activeRow, activeCol, correctValue);
 
-                // Bloquear la celda para que no pueda ser modificada
+                // Bloquear la celda (ya no es editable)
                 StackPane cell = cells[activeRow][activeCol];
                 cell.setDisable(true);
-                // Limpiar la selección actual
+
+                // Limpiar selección
                 if (activeCell != null) {
                     activeCell.getStyleClass().remove("active");
                     activeCell = null;
                 }
-                // Resetear coordenadas
                 activeRow = -1;
                 activeCol = -1;
-                hintsLeft -= 1;
 
-                // Desactivar el botón de hint (ya no hay celda seleccionada)
-                if (btnHint != null) {
+                // Actualizar contador de pistas
+                hintsLeft -= 1;
+                updateHintsLabel();
+
+                // Desactivar botón si no quedan pistas
+                if (btnHint != null && hintsLeft <= 0) {
                     btnHint.setDisable(true);
                 }
 
+                // Verificar errores
                 var errores = model.revisarErrores();
-
                 if (!errores.isEmpty()) {
                     for (int[] pos : errores) {
-                        int r = pos[0]; // Corresponde a la fila
-                        int c = pos[1]; //Corresponde a la columna
+                        int r = pos[0];
+                        int c = pos[1];
                         if (!cells[r][c].isDisabled()) {
                             marcarErrorVisual(r, c);
                         }
@@ -349,17 +385,13 @@ public class SudokuController {
 
             } else {
                 if (lblStatus != null) {
-                    lblStatus.setText("Esta celda ya tiene un número");
+                    lblStatus.setText("No se pudo generar una pista para esta celda");
                 }
             }
 
-        } else if (hintsLeft <= 0) {
-            if (btnHint != null){
-                btnHint.setDisable(true);
-            }
         } else {
             if (lblStatus != null) {
-                lblStatus.setText("Selecciona una celda primero");
+                lblStatus.setText("Selecciona una celda vacía primero");
             }
         }
     }
@@ -440,5 +472,15 @@ public class SudokuController {
 
     */
     //-----------METODO PARA RESOLVER TABLERO-----
+
+    /**
+     * Actualiza el texto del label de pistas restantes.
+     */
+    private void updateHintsLabel() {
+        if (lblHintsRemaining != null) {
+            lblHintsRemaining.setText(String.valueOf(hintsLeft));
+        }
+    }
+
 
 }
