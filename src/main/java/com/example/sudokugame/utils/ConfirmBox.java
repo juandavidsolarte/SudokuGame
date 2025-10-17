@@ -5,6 +5,7 @@ import javafx.scene.control.ButtonType;
 
 /**
  * Implementación de IConfirmBox usando JavaFX Alert.
+ * @author Juan David Solarte
  */
 public class ConfirmBox implements IConfirmBox {
 

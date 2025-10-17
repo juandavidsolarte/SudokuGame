@@ -1,0 +1,1 @@
+packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"m":"com.example.sudokugame","l":"com.example.sudokugame"},{"m":"com.example.sudokugame","l":"com.example.sudokugame.Controllers"},{"m":"com.example.sudokugame","l":"com.example.sudokugame.model"},{"m":"com.example.sudokugame","l":"com.example.sudokugame.utils"}];updateSearchResults();

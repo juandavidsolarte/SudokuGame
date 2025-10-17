@@ -1,0 +1,5 @@
+module:com.example.sudokugame
+com.example.sudokugame
+com.example.sudokugame.Controllers
+com.example.sudokugame.model
+com.example.sudokugame.utils

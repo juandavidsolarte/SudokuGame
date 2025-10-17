@@ -17,6 +17,8 @@ import java.util.Optional;
 /**
  * Controlador de la vista del juego Sudoku 6x6.
  * Se encarga de manejar la interacción entre la vista y el modelo.
+ * @author Juan David Solarte
+ * @author Sergio Ernesto Patiño
  */
 public class SudokuController {
 
@@ -423,7 +425,13 @@ public class SudokuController {
     }
 
 
-    // Metodo para actualizar la visualización de una celda específica
+
+    /**
+     * Metodo para actualizar la visualización de una celda específica
+     * @param row fila de a la que pertenece la celda
+     * @param col columna a la que pertenece la celda
+     * @param value valor que posee la celda
+     */
     private void updateCellDisplay(int row, int col, int value) {
         StackPane cell = cells[row][col];
         // Limpiar el contenido anterior
@@ -445,7 +453,9 @@ public class SudokuController {
     // ---------------------------pista -------------
 
 
-
+    /**
+     * Metodo que maneja la visualizacion de las reglas.
+     */
     @FXML
     private void handleShowRules() {
         String title = "Sudoku 6x6";
